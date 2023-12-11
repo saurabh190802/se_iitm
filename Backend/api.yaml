@@ -1,0 +1,767 @@
+openapi: 3.0.0
+info:
+  description: This is the API specification for the placement gyaan portal
+  version: 1.0.0
+  title: Placement Gyaan
+  contact:
+    email: team-5@se.project
+tags:
+  - name: auth
+    description: Access to signup and login
+  - name: post
+    description: CRUD functionality for Posts
+  - name: quiz
+    description: CRUD functionality for Quizzes
+  - name: education
+    description: CRUD functionality for education experience
+  - name: profession
+    description: CRUD functionality for professional experience
+  - name: search
+    description: Functionality for searching users, posts, quizzes
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Signup a new user
+      description: Register user by sending first name, last name, email and password
+      operationId: registerUser
+      requestBody:
+        $ref: "#/components/requestBodies/Register"
+      responses:
+        "200":
+          description: User successfully created
+        "400":
+          description: Invalid input
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Logs in a user and returns their details
+      description: User can log in by providing email, password. If valid, user details are returned along with JWT token that is required for using other APIs. Include this token in 'x-access-token' header
+      operationId: loginUser
+      requestBody:
+        $ref: "#/components/requestBodies/Login"
+      responses:
+        "200":
+          description: successful login
+          content:
+            application/json:
+              schema:
+               $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Invalid input
+  
+  /post:
+    post:
+      tags:
+        - post
+      summary: Create a new post
+      description: Create a new post by sending post title, post caption
+      operationId: createPost
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+      requestBody:
+        $ref : "#/components/requestBodies/PostRequest"
+      responses:
+        "200":
+          description: Post success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid input
+  /post/{post_id}:
+    get:
+      tags:
+        - post
+      description: Return post data of given id
+      operationId: getPostbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: post_id
+          in: path
+          description: id of post to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+        "400":
+           description: invalid post id
+    put:
+      tags:
+        - post
+      description: Update post data of given id. Fields to be updated are given in request body
+      operationId: updatePostbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: post_id
+          in: path
+          description: id of post to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref : "#/components/requestBodies/PostRequest"
+      responses:
+        "200":
+          description: successful operation. returns updated post data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+        "400":
+           description: invalid data
+    delete:
+      tags:
+        - post
+      description: Delete post data of given id
+      operationId: deletePostbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: post_id
+          in: path
+          description: id of post to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+        "400":
+           description: invalid data
+  
+  /search/users/{search_query}:
+    get:
+      tags:
+        - search
+      description: Return user data matching given term
+      operationId: getUsersbyTerm
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: search_query
+          in: path
+          description: term to search
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoginResponse"
+        "400":
+           description: invalid search query
+  /search/posts/{search_query}:
+    get:
+      tags:
+        - search
+      description: Return post data matching given term
+      operationId: getPostsbyTerm
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: search_query
+          in: path
+          description: term to search
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostResponse"
+        "400":
+           description: invalid search query
+  /search/quizzes/{search_query}:
+    get:
+      tags:
+        - search
+      description: Return quiz data matching given term
+      operationId: getQuizzesbyTerm
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: search_query
+          in: path
+          description: term to search
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuizSearchResponse"
+        "400":
+           description: invalid search query
+  
+  /quiz:
+    post:
+      tags:
+        - quiz
+      summary: Create a new quiz
+      description: Create a new post by sending quiz title, quiz caption and quiz questions
+      operationId: createQuiz
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+      requestBody:
+        $ref : "#/components/requestBodies/QuizRequest"
+      responses:
+        "200":
+          description: Post success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResponse"
+        "400":
+          description: Invalid input
+  /quiz/{quiz_id}:
+    get:
+      tags:
+        - quiz
+      description: Return quiz data of given id
+      operationId: getQuizbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: quiz_id
+          in: path
+          description: id of quiz to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResponse"
+        "400":
+           description: invalid quiz id
+    put:
+      tags:
+        - quiz
+      description: Update quiz data of given id. Entire modified quiz should be sent as json object
+      operationId: updateQuizbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: quiz_id
+          in: path
+          description: id of quiz to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref : "#/components/requestBodies/QuizRequest"
+      responses:
+        "200":
+          description: successful operation. returns updated quiz data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResponse"
+        "400":
+           description: invalid data
+    delete:
+      tags:
+        - quiz
+      description: Delete quiz data of given id
+      operationId: deleteQuizbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: quiz_id
+          in: path
+          description: id of post to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+        "400":
+           description: invalid data
+  
+  /achievement/education:
+    post:
+      tags:
+        - education
+      summary: Create a new education entry
+      description: Create a new education entry by sending college name, joining year, graduation year
+      operationId: createEducationEntry
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+      requestBody:
+        $ref : "#/components/requestBodies/EducationRequest"
+      responses:
+        "200":
+          description: Post success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EducationResponse"
+        "400":
+          description: Invalid input
+  /achievement/education/{education_id}:
+    get:
+      tags:
+        - education
+      description: Return education data of given id
+      operationId: getEducationbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: education_id
+          in: path
+          description: id of post to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EducationResponse"
+        "400":
+           description: invalid post id
+    put:
+      tags:
+        - education
+      description: Update education entry data of given id. Fields to be updated are given in request body
+      operationId: updateEducationbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: education_id
+          in: path
+          description: id of education entry to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref : "#/components/requestBodies/EducationRequest"
+      responses:
+        "200":
+          description: successful operation. returns updated education entry data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EducationResponse"
+        "400":
+           description: invalid data
+    delete:
+      tags:
+        - education
+      description: Delete education data of given id
+      operationId: deleteEducationbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: education_id
+          in: path
+          description: id of education entry to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+        "400":
+           description: invalid data
+  
+  /achievement/profession:
+    post:
+      tags:
+        - profession
+      summary: Create a new profession entry
+      description: Create a new profession entry by sending company name, joining year, graduation year
+      operationId: createProfessionEntry
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+      requestBody:
+        $ref : "#/components/requestBodies/ProfessionRequest"
+      responses:
+        "200":
+          description: Profession success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfessionResponse"
+        "400":
+          description: Invalid input
+  /achievement/profession/{profession_id}:
+    get:
+      tags:
+        - profession
+      description: Return profession data of given id
+      operationId: getProfessionbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: profession_id
+          in: path
+          description: id of profession to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfessionResponse"
+        "400":
+           description: invalid profession id
+    put:
+      tags:
+        - profession
+      description: Update profession entry data of given id. Fields to be updated are given in request body
+      operationId: updateProfessionbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: profession_id
+          in: path
+          description: id of profession entry to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref : "#/components/requestBodies/ProfessionRequest"
+      responses:
+        "200":
+          description: successful operation. returns updated profession entry data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfessionResponse"
+        "400":
+           description: invalid data
+    delete:
+      tags:
+        - profession
+      description: Delete profession data of given id
+      operationId: deleteProfessionbyId
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.P01EWncYImh8G4Gvp38CYpwVUizWIU9wSK1C5FyrJyo
+        - name: profession_id
+          in: path
+          description: id of profession entry to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+        "400":
+           description: invalid data
+  
+  
+          
+
+
+servers:
+  - url: http://127.0.0.1:5000
+components:
+  requestBodies:
+    Register:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/Register"
+    Login:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/Login"
+    PostRequest:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/PostRequest"
+    EducationRequest:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/EducationRequest"
+    ProfessionRequest:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/ProfessionRequest"
+    QuizRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/QuizRequest"
+  schemas:
+    Register:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email: 
+          type: string
+        password:
+          type: string
+    PostRequest:
+      type: object
+      properties:
+        post_title:
+          type: string
+        post_caption:
+          type: string
+    PostResponse:
+      type: object
+      properties:
+        post_title:
+          type: string
+        post_caption:
+          type: string
+        post_id:
+          type: integer
+        post_user_id:
+          type: integer
+    EducationRequest:
+      type: object
+      properties:
+        college_name:
+          type: string
+        joining_year:
+          type: integer
+        graduation_year:
+          type: integer
+    EducationResponse:
+      type: object
+      properties:
+        college_name:
+          type: string
+        joining_year:
+          type: integer
+        graduation_year:
+          type: integer
+        user_id:
+          type: integer
+        education_id:
+          type: integer
+    ProfessionRequest:
+      type: object
+      properties:
+        company_name:
+          type: string
+        joining_year:
+          type: integer
+        graduation_year:
+          type: integer
+    ProfessionResponse:
+      type: object
+      properties:
+        company_name:
+          type: string
+        joining_year:
+          type: integer
+        graduation_year:
+          type: integer
+        user_id:
+          type: integer
+        profession_id:
+          type: integer
+    QuizRequest:
+      type: object
+      properties:
+        quiz_title:
+          type: string
+        quiz_caption:
+          type: string
+        quiz_questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+    QuizResponse:
+      type: object
+      properties:
+        quiz_title:
+          type: string
+        quiz_caption:
+          type: string
+        quiz_user_id:
+          type: integer
+        quiz_id:
+          type: integer
+        quiz_questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionResponse"
+          
+    QuizSearchResponse:
+      type: object
+      properties:
+        quiz_title:
+          type: string
+        quiz_caption:
+          type: string
+        quiz_user_id:
+          type: integer
+        quiz_id:
+          type: integer
+        
+    Question:
+      type: object
+      properties:
+        question_number:
+          type: integer
+        question_text:
+          type: string
+        question_answer:
+          type: integer
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/Option"
+    QuestionResponse:
+      type: object
+      properties:
+        question_number:
+          type: integer
+        question_id:
+          type: integer
+        question_text:
+          type: string
+        question_answer:
+          type: integer
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionResponse"
+    Option:
+      type: object
+      properties:
+        option_number:
+          type: integer
+        option_text:
+          type: string
+    OptionResponse:
+      type: object
+      properties:
+        option_sequence_id:
+          type: integer
+        option_text:
+          type: string
+        option_id:
+          type: integer
+    Login:
+      type: object
+      properties:
+        email: 
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        user_id:
+          type: integer
+        jwt_token:
+          type: string
+    
+    

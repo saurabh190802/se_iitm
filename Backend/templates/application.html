@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@3.6.5/dist/vue-router.js"></script>
+    <script src="https://unpkg.com/vuex@3.6.2/dist/vuex.js"></script>
+    <title> </title>
+  </head>
+  <body>
+
+    <div class = "container" id="app">
+      <nav class="navbar">
+        <a class="navbar-brand" href="#">Placement Gyaan</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">   <router-link class="nav-link" to="/">Login</router-link> </li>
+            <li class="nav-item"><router-link class="nav-link" to="/register">Register</router-link> </li>
+          </ul>
+        </div>
+      </nav>
+      <div class = "row">
+        <div class = "column">
+          <router-view></router-view>
+        </div>
+      </div>
+    </div>
+        <script type="text/javascript" src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
